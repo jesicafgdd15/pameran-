@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Empat Berbaris</title>
+<style>
+:root{--bg:#f4f1ea;--card:#fff;--ink:#1d2433;--mut:#6b7385;--bd:#e0dccf;--brd:#2a4bd7;--hole:#e9edff;--p1:#e5484d;--p2:#f5b700;--ac:#2a4bd7;--ok:#1f9d55;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151f;--card:#1b2030;--ink:#eef0f6;--mut:#9aa3b8;--bd:#2c3348;--brd:#3d5df0;--hole:#12151f;--ac:#6f8aff}}
+:root[data-theme="dark"]{--bg:#12151f;--card:#1b2030;--ink:#eef0f6;--mut:#9aa3b8;--bd:#2c3348;--brd:#3d5df0;--hole:#12151f;--ac:#6f8aff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+.w{max-width:460px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:30px;margin:6px 0 2px;letter-spacing:-.5px}h2{font-size:17px;margin:0 0 10px}
+.sub{color:var(--mut);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:600;background:var(--ac);color:#fff;width:100%}
+button.sec{background:transparent;color:var(--ink);border:1.5px solid var(--bd)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px}.row>*{flex:1}
+input{font:inherit;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--bd);background:var(--bg);color:var(--ink);text-transform:uppercase;letter-spacing:6px;text-align:center;font-weight:700;font-size:20px}
+.lv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lv button{padding:10px 4px;font-size:14px;line-height:1.2}.lv small{display:block;font-weight:400;opacity:.8}
+ol{margin:0;padding-left:20px;color:var(--mut)}ol li{margin:4px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.top button{width:auto;padding:8px 12px;font-size:14px}
+.code{font-size:26px;font-weight:800;letter-spacing:6px}
+.st{text-align:center;font-weight:700;min-height:30px;margin:6px 0 10px}
+.pl{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-bottom:8px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.bd{background:var(--brd);padding:8px;border-radius:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.c{aspect-ratio:1;border-radius:50%;background:var(--hole);position:relative;cursor:pointer}
+.c.p1{background:var(--p1)}.c.p2{background:var(--p2)}
+.c.last::after{content:"";position:absolute;inset:32%;border-radius:50%;background:rgba(255,255,255,.55)}
+.c.win{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--ok);z-index:1}
+.c.p1,.c.p2{animation:d .35s ease-out}
+@keyframes d{from{transform:translateY(-120px);opacity:.3}}
+.hint{color:var(--mut);font-size:13px;text-align:center;margin-top:10px}
+.hide{display:none}.err{color:var(--p1);font-size:14px;margin-top:8px;min-height:18px}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div id="menu">
+  <h1>Empat Berbaris</h1>
+  <p class="sub">Susun 4 koin sejajar sebelum lawanmu. Main bareng teman dari HP masing-masing!</p>
+
+  <div class="card">
+    <h2>Main bareng teman</h2>
+    <button id="mk">Buat ruangan privat</button>
+    <div style="height:12px"></div>
+    <div class="row"><input id="cd" maxlength="4" placeholder="KODE" autocomplete="off"><button id="jn" class="sec" style="flex:.8">Gabung</button></div>
+    <div class="err" id="er"></div>
+  </div>
+
+  <div class="card">
+    <h2>Lawan bot</h2>
+    <div class="lv" id="lv"></div>
+    <div class="hint" style="text-align:left">Menangkan level untuk membuka level berikutnya.</div>
+  </div>
+
+  <div class="card">
+    <h2>Cara main</h2>
+    <ol>
+      <li><b>Buat ruangan</b>, lalu kirim kode 4 huruf ke temanmu.</li>
+      <li>Teman buka link game ini, ketik kode di kolom <b>KODE</b>, tekan <b>Gabung</b>.</li>
+      <li>Bergiliran, tap sebuah kolom untuk menjatuhkan koin.</li>
+      <li>Pertama yang membuat 4 koin lurus (mendatar, tegak, atau miring) menang.</li>
+      <li>Mau latihan? Pilih level bot, dari Santai sampai Dewa.</li>
+    </ol>
+    <div class="hint" id="note"></div>
+  </div>
+</div>
+
+<div id="game" class="hide">
+  <div class="top">
+    <button class="sec" id="bk">← Menu</button>
+    <div id="rc" class="hide" style="text-align:center"><div class="hint" style="margin:0">Kode ruangan</div><div class="code" id="rcode"></div></div>
+    <button class="sec" id="sh">Bagikan</button>
+  </div>
+  <div class="pl"><span id="n1"></span><span id="n2"></span></div>
+  <div class="st" id="st"></div>
+  <div class="bd" id="bd"></div>
+  <div style="height:14px"></div>
+  <button id="rm" class="hide">Main lagi</button>
+  <div class="hint" id="gh"></div>
+</div>
+
+</div>
+<script>
+(function(){
+var R=6,C=7,LV=[["Santai","😴"],["Mudah","🙂"],["Sedang","😎"],["Sulit","😤"],["Pro","🔥"],["Dewa","👹"]],DEPTH=[0,1,3,4,6,7];
+var $=function(i){return document.getElementById(i)};
+var me;try{me=sessionStorage.getItem("c4id")}catch(e){}
+if(!me){me=Math.random().toString(36).slice(2,10);try{sessionStorage.setItem("c4id",me)}catch(e){}}
+var db=null,unlock=1;
+try{unlock=parseInt(localStorage.getItem("c4lv")||"1",10)||1}catch(e){}
+
+var mode=null,S=null,roomRef=null,unsub=null,code="",myN=0,botLv=0,busy=false;
+
+/* ---------- logic ---------- */
+function empty(){var a=[];for(var i=0;i<42;i++)a.push(0);return a}
+function dropRow(b,c){for(var r=R-1;r>=0;r--)if(!b[r*C+c])return r;return -1}
+function line(b,p){
+  var D=[[0,1],[1,0],[1,1],[1,-1]];
+  for(var r=0;r<R;r++)for(var c=0;c<C;c++){
+    if(b[r*C+c]!==p)continue;
+    for(var k=0;k<4;k++){var dr=D[k][0],dc=D[k][1],cells=[r*C+c],i;
+      for(i=1;i<4;i++){var rr=r+dr*i,cc=c+dc*i;if(rr<0||rr>=R||cc<0||cc>=C||b[rr*C+cc]!==p)break;cells.push(rr*C+cc)}
+      if(cells.length===4)return cells}
+  }return null}
+function full(b){for(var c=0;c<C;c++)if(!b[c])return false;return true}
+function score(b,p){
+  var o=3-p,s=0,i,r,c;
+  for(r=0;r<R;r++)if(b[r*C+3]===p)s+=3;
+  var D=[[0,1],[1,0],[1,1],[1,-1]];
+  for(r=0;r<R;r++)for(c=0;c<C;c++)for(var k=0;k<4;k++){
+    var a=0,e=0,x=0,ok=true;
+    for(i=0;i<4;i++){var rr=r+D[k][0]*i,cc=c+D[k][1]*i;if(rr<0||rr>=R||cc<0||cc>=C){ok=false;break}
+      var v=b[rr*C+cc];if(v===p)a++;else if(v===o)x++;else e++}
+    if(!ok)continue;
+    if(a===3&&e===1)s+=5;else if(a===2&&e===2)s+=2;
+    if(x===3&&e===1)s-=4}
+  return s}
+var ORD=[3,2,4,1,5,0,6];
+function mm(b,d,al,be,p,me2){
+  var w=line(b,me2);if(w)return 1000+d;
+  w=line(b,3-me2);if(w)return -1000-d;
+  if(d===0||full(b))return score(b,me2);
+  var best,i,c,r,v;
+  if(p===me2){best=-1e9;
+    for(i=0;i<7;i++){c=ORD[i];r=dropRow(b,c);if(r<0)continue;b[r*C+c]=p;v=mm(b,d-1,al,be,3-p,me2);b[r*C+c]=0;
+      if(v>best)best=v;if(best>al)al=best;if(al>=be)break}
+  }else{best=1e9;
+    for(i=0;i<7;i++){c=ORD[i];r=dropRow(b,c);if(r<0)continue;b[r*C+c]=p;v=mm(b,d-1,al,be,3-p,me2);b[r*C+c]=0;
+      if(v<best)best=v;if(best<be)be=best;if(al>=be)break}}
+  return best}
+function botMove(b,lv){
+  var cols=[],c;for(c=0;c<C;c++)if(dropRow(b,c)>=0)cols.push(c);
+  var d=DEPTH[lv-1];
+  if(d===0||(lv===2&&Math.random()<.3))return cols[Math.floor(Math.random()*cols.length)];
+  var best=-1e9,pick=[];
+  for(var i=0;i<7;i++){c=ORD[i];var r=dropRow(b,c);if(r<0)continue;
+    b[r*C+c]=2;var v=mm(b,d-1,-1e9,1e9,1,2);b[r*C+c]=0;
+    if(v>best){best=v;pick=[c]}else if(v===best)pick.push(c)}
+  return pick[Math.floor(Math.random()*pick.length)]}
+
+/* ---------- ui ---------- */
+function show(id){["menu","game"].forEach(function(x){$(x).classList.toggle("hide",x!==id)})}
+function esc(t){return String(t)}
+function render(){
+  if(!S)return;
+  var bd=$("bd");bd.innerHTML="";
+  var win=S.wc||[];
+  for(var i=0;i<42;i++){
+    var d=document.createElement("div");
+    d.className="c"+(S.b[i]?" p"+S.b[i]:"")+(S.lm===i?" last":"")+(win.indexOf(i)>-1?" win":"");
+    (function(col){d.onclick=function(){play(col)}})(i%C);
+    bd.appendChild(d)}
+  var n1,n2,st;
+  if(mode==="bot"){n1="Kamu";n2="Bot "+LV[botLv-1][1]+" Lv."+botLv}
+  else{n1=myN===1?"Kamu":"Pemain 1";n2=S.p2?(myN===2?"Kamu":"Pemain 2"):"Menunggu teman…"}
+  $("n1").innerHTML='<i class="dot" style="background:var(--p1)"></i>'+n1;
+  $("n2").innerHTML='<i class="dot" style="background:var(--p2)"></i>'+n2;
+  if(S.w){
+    if(S.w===3)st="Seri! 🤝";
+    else if(mode==="bot")st=S.w===1?"Kamu menang! 🎉":"Bot menang 🤖";
+    else st=S.w===myN?"Kamu menang! 🎉":(myN?"Temanmu menang":"Pemain "+S.w+" menang");
+  }else if(mode==="bot")st=S.t===1?"Giliranmu":"Bot sedang berpikir…";
+  else if(!S.p2)st="Bagikan kode ke temanmu";
+  else if(!myN)st="Ruangan penuh (kamu penonton)";
+  else st=S.t===myN?"Giliranmu!":"Giliran temanmu…";
+  $("st").textContent=st;
+  var over=!!S.w;
+  $("rm").classList.toggle("hide",!over||(mode==="room"&&!myN));
+  $("gh").textContent=over?"":"Tap kolom mana saja untuk menjatuhkan koin.";
+}
+function newState(first){return{b:empty(),t:first||1,w:0,wc:[],lm:-1}}
+
+function apply(s,col,p){
+  var r=dropRow(s.b,col);if(r<0)return false;
+  s.b[r*C+col]=p;s.lm=r*C+col;
+  var w=line(s.b,p);
+  if(w){s.w=p;s.wc=w}else if(full(s.b)){s.w=3;s.wc=[]}else s.t=3-p;
+  return true}
+
+function play(col){
+  if(!S||S.w||busy)return;
+  if(mode==="bot"){
+    if(S.t!==1)return;
+    if(!apply(S,col,1))return;
+    render();
+    if(S.w===1){win()}
+    else if(!S.w){setTimeout(function(){
+      var c=botMove(S.b.slice(),botLv);apply(S,c,2);render()},450)}
+  }else{
+    if(!myN||S.t!==myN||!S.p2)return;
+    var n={b:S.b.slice(),t:S.t,w:0,wc:[],lm:-1};
+    if(!apply(n,col,myN))return;
+    busy=true;
+    roomRef.update({b:n.b.join(""),t:n.t,w:n.w,wc:n.wc,lm:n.lm}).catch(function(){$("st").textContent="Gagal mengirim langkah. Coba lagi."}).then(function(){busy=false})}
+}
+function win(){
+  if(botLv===unlock&&unlock<6){unlock++;try{localStorage.setItem("c4lv",String(unlock))}catch(e){}}
+  setTimeout(function(){$("st").textContent="Kamu menang! 🎉 Level "+Math.min(botLv+1,6)+" terbuka"},0)}
+
+/* ---------- menu ---------- */
+function buildLv(){
+  var h=$("lv");h.innerHTML="";
+  LV.forEach(function(l,i){
+    var b=document.createElement("button");b.className=(i+1<=unlock?"":"sec");
+    b.disabled=i+1>unlock;
+    b.innerHTML=l[1]+" Lv."+(i+1)+"<small>"+(i+1>unlock?"🔒 terkunci":l[0])+"</small>";
+    b.onclick=function(){startBot(i+1)};h.appendChild(b)})}
+function startBot(l){
+  mode="bot";botLv=l;S=newState(1);code="";
+  $("rc").classList.add("hide");$("sh").classList.add("hide");show("game");render()}
+function genCode(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ",s="";for(var i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function toS(d){return{b:String(d.b).split("").map(Number),t:d.t,w:d.w,wc:d.wc||[],lm:d.lm,p1:d.p1,p2:d.p2}}
+function enter(c,mine){
+  code=c;mode="room";roomRef=db.doc("rooms/"+c);S=null;
+  $("rcode").textContent=c;$("rc").classList.remove("hide");$("sh").classList.remove("hide");show("game");
+  $("st").textContent="Menghubungkan…";
+  var seen=false;
+  unsub=roomRef.onSnapshot(function(sn){
+    if(!sn.exists){if(seen)leave();return}
+    seen=true;var d=sn.data();
+    myN=d.p1===me?1:(d.p2===me?2:0);
+    if(!myN&&!d.p2){roomRef.update({p2:me});return}
+    S=toS(d);render()},function(){$("st").textContent="Koneksi bermasalah. Kembali ke menu lalu coba lagi."})}
+function leave(){if(unsub){try{unsub()}catch(e){}unsub=null}S=null;mode=null;buildLv();show("menu")}
+
+$("mk").onclick=async function(){
+  if(!db)return;$("er").textContent="";
+  try{
+    var c,tries=0;
+    do{c=genCode();var sn=await db.doc("rooms/"+c).get();if(!sn.exists)break;tries++}while(tries<6);
+    await db.doc("rooms/"+c).set({b:empty().join(""),t:1,w:0,wc:[],lm:-1,p1:me,p2:null,at:Date.now()});
+    enter(c,true)
+  }catch(e){$("er").textContent="Gagal membuat ruangan. Pastikan kamu sudah login."}};
+$("jn").onclick=async function(){
+  if(!db)return;var c=$("cd").value.trim().toUpperCase();
+  if(c.length!==4){$("er").textContent="Kode harus 4 huruf.";return}
+  try{var sn=await db.doc("rooms/"+c).get();
+    if(!sn.exists){$("er").textContent="Ruangan “"+c+"” tidak ditemukan.";return}
+    $("er").textContent="";enter(c)
+  }catch(e){$("er").textContent="Gagal bergabung. Pastikan kamu sudah login."}};
+$("cd").addEventListener("input",function(){this.value=this.value.replace(/[^a-zA-Z]/g,"").toUpperCase()});
+$("bk").onclick=leave;
+$("rm").onclick=function(){
+  if(mode==="bot"){S=newState(1);render();return}
+  var first=S.t===1?2:1;
+  roomRef.update({b:empty().join(""),t:first,w:0,wc:[],lm:-1})};
+$("sh").onclick=function(){
+  var t="Ayo main Empat Berbaris! Buka game ini lalu masukkan kode ruangan: "+code;
+  if(navigator.share){navigator.share({text:t}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){$("sh").textContent="Tersalin ✓";setTimeout(function(){$("sh").textContent="Bagikan"},1500)}).catch(function(){})}};
+
+buildLv();
+if(window.claude&&claude.use){
+  claude.use("db").then(function(d){
+    db=d;
+    if(!db){$("mk").disabled=true;$("jn").disabled=true;$("note").textContent="Mode ruangan butuh login Claude. Mode bot tetap bisa dimainkan."}
+  }).catch(function(){})
+}else{$("mk").disabled=true;$("jn").disabled=true;$("note").textContent="Mode ruangan hanya tersedia di halaman yang dipublikasikan."}
+})();
+</script>
+</body>
+</html>
